@@ -32,3 +32,10 @@ htmlcov/
 
 # MacOS
 .DS_Store
+
+# Generated output files (presentations, documents)
+*.pptx
+*.docx
+*.pdf
+*.tex
+*.latex
