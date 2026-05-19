@@ -31,6 +31,19 @@ class MarkdownParser:
             # Remove frontmatter from content before passing to markdown parser
             content = content[match.end():]
             
+        # Feature 5: Auto-Table of Contents
+        if metadata.get("toc"):
+            content = "# Table of Contents\n\n[[TOC]]\n\n---\n" + content
+            
+        # Feature 4: Multi-Column Layout Directives
+        # Replace ::: col with a custom HTML block or token
+        content = re.sub(r":::\s*col", "<!-- col -->", content)
+            
+        # Feature 1: Mermaid.js integration placeholder
+        # In a full implementation, we'd find ```mermaid blocks, run mmdc via subprocess, 
+        # and replace them with ![diagram](path.png)
+        content = re.sub(r"```mermaid(.*?)```", r"![Mermaid Diagram](mermaid_placeholder.png)", content, flags=re.DOTALL)
+            
         tokens = self.md.parse(content)
         
         return {

@@ -1,0 +1,10 @@
+site_name: OpenDocAgent
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: deep purple
+
+nav:
+  - Home: index.md
+  - Markdown Syntax Guide: syntax.md

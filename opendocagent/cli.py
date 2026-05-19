@@ -6,6 +6,7 @@ import json
 from opendocagent.parser import MarkdownParser
 from opendocagent.template_manager import TemplateManager
 from opendocagent.converters import DocxConverter, PptxConverter, LatexConverter
+from opendocagent.validator import TemplateValidator
 
 def main():
     parser = argparse.ArgumentParser(description="OpenDocAgent CLI")
@@ -36,6 +37,10 @@ def main():
         md_parser = MarkdownParser()
         parsed = md_parser.parse(content, context=context)
         metadata = parsed["metadata"]
+        
+        # Pre-flight linting validation
+        validator = TemplateValidator()
+        validator.validate(metadata, parsed["tokens"])
         
         # Determine format
         target_format = args.format
