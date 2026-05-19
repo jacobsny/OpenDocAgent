@@ -76,7 +76,7 @@ def cmd_build(slug: str, fmt: str, extra: list):
 
     cmd = ["opendoc", "build", str(md_file), "--format", fmt] + extra
     print(f"[workflow] Building: {' '.join(cmd)}")
-    result = subprocess.run(cmd, cwd=str(PROJECT_ROOT))
+    result = subprocess.run(cmd, cwd=str(workspace))
     if result.returncode != 0:
         print("[workflow] Build failed.")
         sys.exit(result.returncode)

@@ -18,7 +18,7 @@ def main():
     parser = argparse.ArgumentParser(description="OpenDocAgent CLI")
     parser.add_argument("command", choices=["build"], help="Command to run")
     parser.add_argument("input_file", help="Path to the agent-generated Markdown file")
-    parser.add_argument("--format", choices=["pdf", "pptx", "docx", "latex", "auto"], default="auto", help="Output format. If 'auto', reads from markdown frontmatter.")
+    parser.add_argument("--format", choices=["pdf", "pptx", "docx", "latex", "beamer", "auto"], default="auto", help="Output format. If 'auto', reads from markdown frontmatter.")
     parser.add_argument("--template", help="Name of the template to apply")
     parser.add_argument("--data", help="Path to a JSON file containing dynamic data for Jinja2 templating")
     

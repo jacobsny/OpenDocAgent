@@ -40,6 +40,9 @@ htmlcov/
 *.tex
 *.latex
 
+# Allow tracking core LaTeX style sheets/templates
+!templates/**/*.tex
+
 # Document workspaces — never commit in-progress or finalized docs
 wip/
 finalized/

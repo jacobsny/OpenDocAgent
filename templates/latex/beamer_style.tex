@@ -1,0 +1,94 @@
+%% ============================================================
+%% OpenDocAgent — Professional Beamer Style Overrides
+%% Applied automatically when format: beamer
+%% ============================================================
+
+%% --- Core packages ---
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+
+%% --- Brand Color Palette ---
+\definecolor{odaNavy}{HTML}{1F3A5F}
+\definecolor{odaBlue}{HTML}{2E75B6}
+\definecolor{odaSkyBlue}{HTML}{BDD7EE}
+\definecolor{odaGray}{HTML}{595959}
+\definecolor{odaLightGray}{HTML}{F2F2F2}
+\definecolor{odaOrange}{HTML}{ED7D31}
+\definecolor{odaGreen}{HTML}{375623}
+\definecolor{odaWhite}{HTML}{FFFFFF}
+
+%% --- Override Beamer Theme Colors with Brand Palette ---
+\setbeamercolor{palette primary}{bg=odaNavy,fg=odaWhite}
+\setbeamercolor{palette secondary}{bg=odaBlue,fg=odaWhite}
+\setbeamercolor{palette tertiary}{bg=odaNavy,fg=odaWhite}
+\setbeamercolor{palette quaternary}{bg=odaNavy,fg=odaWhite}
+\setbeamercolor{structure}{fg=odaNavy}
+\setbeamercolor{local structure}{fg=odaBlue}
+\setbeamercolor{alerted text}{fg=odaOrange}
+\setbeamercolor{example text}{fg=odaBlue}
+\setbeamercolor{section in toc}{fg=odaNavy}
+\setbeamercolor{subsection in toc}{fg=odaBlue}
+
+%% --- Block colors ---
+\setbeamercolor{block title}{bg=odaNavy,fg=odaWhite}
+\setbeamercolor{block body}{bg=odaLightGray,fg=black}
+\setbeamercolor{block title alerted}{bg=odaOrange,fg=odaWhite}
+\setbeamercolor{block body alerted}{bg=odaOrange!15,fg=black}
+\setbeamercolor{block title example}{bg=odaBlue,fg=odaWhite}
+\setbeamercolor{block body example}{bg=odaSkyBlue!40,fg=black}
+
+%% --- Typography ---
+\setbeamerfont{title}{size=\LARGE,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large,shape=\itshape}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small,shape=\itshape}
+\setbeamerfont{date}{size=\small}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\normalsize,shape=\itshape}
+\setbeamerfont{block title}{series=\bfseries,size=\normalsize}
+\setbeamerfont{footline}{size=\scriptsize}
+\setbeamerfont{section in toc}{series=\bfseries}
+
+%% --- Remove navigation symbols (always) ---
+\setbeamertemplate{navigation symbols}{}
+
+%% --- Bullet point style ---
+\setbeamertemplate{itemize item}{\color{odaBlue}\textbullet}
+\setbeamertemplate{itemize subitem}{\color{odaBlue}{\small$\circ$}}
+\setbeamertemplate{itemize subsubitem}{\color{odaGray}{\small$-$}}
+
+%% --- Enumerate item style ---
+\setbeamertemplate{enumerate item}{\color{odaNavy}\textbf{\insertenumlabel.}}
+\setbeamertemplate{enumerate subitem}{\color{odaBlue}\insertenumlabel.}
+
+%% --- Custom footline: author | title | page/total (suppressed on slide 1) ---
+\setbeamertemplate{footline}{%
+  \ifnum\insertframenumber=1
+    % Suppressed on first slide
+  \else
+    \leavevmode%
+    \hbox{%
+      \begin{beamercolorbox}[wd=0.50\paperwidth,ht=2.5ex,dp=1ex,leftskip=0.5em,rightskip=0.5em]{palette secondary}%
+        \usebeamerfont{footline}\insertshortauthor%
+        \ifx\insertshortinstitute\empty\else\ \textbar\ \insertshortinstitute\fi%
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=0.30\paperwidth,ht=2.5ex,dp=1ex,center]{palette secondary}%
+        \usebeamerfont{footline}\insertshorttitle%
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=0.20\paperwidth,ht=2.5ex,dp=1ex,rightskip=0.5em,right]{palette primary}%
+        \usebeamerfont{footline}%
+        \insertframenumber\,/\,\inserttotalframenumber%
+      \end{beamercolorbox}%
+    }%
+    \vskip0pt%
+  \fi
+}
+
+%% --- Table column sep ---
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.3}

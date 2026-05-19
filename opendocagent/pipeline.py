@@ -32,7 +32,7 @@ class DocumentPipeline:
             
         target_format = target_format.lower()
         # Aliases
-        if target_format == "pdf":
+        if target_format in ["pdf", "beamer"]:
             target_format = "latex"
             
         if target_format not in self._converters:
