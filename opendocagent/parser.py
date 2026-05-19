@@ -29,6 +29,7 @@ class MarkdownParser:
         
         return {
             "metadata": metadata,
-            "tokens": tokens
+            "tokens": tokens,
+            "content": content
         }
 

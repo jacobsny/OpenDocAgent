@@ -1,22 +1,23 @@
-import pylatex
+import pypandoc
 from .base import BaseConverter
+import os
 
 class LatexConverter(BaseConverter):
-    def convert(self, ast: dict, output_path: str):
-        # TODO: Parse AST and use pylatex to build the document
-        doc = pylatex.Document()
+    def convert(self, parsed: dict, output_path: str):
+        content = parsed.get("content", "")
         
-        # Apply template / preamble if provided
-        if self.template_path:
-            # Logic to include custom .tex template or .sty package
-            pass
+        extra_args = []
+        if self.template_path and os.path.exists(self.template_path):
+            extra_args.append(f'--template={self.template_path}')
             
-        doc.preamble.append(pylatex.Command('title', 'Converted Document'))
-        doc.preamble.append(pylatex.Command('author', 'OpenDocAgent'))
-        doc.preamble.append(pylatex.Command('date', pylatex.NoEscape(r'\today')))
-        doc.append(pylatex.NoEscape(r'\maketitle'))
+        # Determine format from output_path extension
+        _, ext = os.path.splitext(output_path)
+        out_fmt = 'pdf' if ext.lower() == '.pdf' else 'latex'
         
-        doc.append('This is a placeholder for LaTeX generation.')
-        
-        # pylatex usually adds .tex or .pdf automatically depending on the method
-        doc.generate_pdf(output_path, clean_tex=False)
+        pypandoc.convert_text(
+            content,
+            out_fmt,
+            format='md',
+            outputfile=output_path,
+            extra_args=extra_args
+        )
