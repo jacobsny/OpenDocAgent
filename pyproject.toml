@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "opendocagent"
+version = "0.1.0"
+description = "Agentic workflow tool for converting Markdown to LaTeX, PDF, PPTX, and DOCX."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "OpenDocAgent Contributors" }
+]
+dependencies = [
+    "markdown-it-py>=3.0.0",
+    "pylatex>=1.4.2",
+    "python-pptx>=1.0.2",
+    "python-docx>=1.1.2",
+    "pyyaml>=6.0.1"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0"
+]
+
+[project.scripts]
+opendoc = "opendocagent.cli:main"
