@@ -1,6 +1,7 @@
 import argparse
 import sys
 import os
+import json
 
 from opendocagent.parser import MarkdownParser
 from opendocagent.template_manager import TemplateManager
@@ -12,6 +13,7 @@ def main():
     parser.add_argument("input_file", help="Path to the agent-generated Markdown file")
     parser.add_argument("--format", choices=["pdf", "pptx", "docx", "latex", "auto"], default="auto", help="Output format. If 'auto', reads from markdown frontmatter.")
     parser.add_argument("--template", help="Name of the template to apply")
+    parser.add_argument("--data", help="Path to a JSON file containing dynamic data for Jinja2 templating")
     
     args = parser.parse_args()
     
@@ -23,8 +25,16 @@ def main():
         with open(args.input_file, "r", encoding="utf-8") as f:
             content = f.read()
             
+        context = None
+        if args.data:
+            if not os.path.exists(args.data):
+                print(f"Error: Data file {args.data} not found.")
+                sys.exit(1)
+            with open(args.data, "r", encoding="utf-8") as df:
+                context = json.load(df)
+            
         md_parser = MarkdownParser()
-        parsed = md_parser.parse(content)
+        parsed = md_parser.parse(content, context=context)
         metadata = parsed["metadata"]
         
         # Determine format
@@ -41,7 +51,8 @@ def main():
             sys.exit(1)
             
         # Determine template
-        template_name = args.template or metadata.get("template", "default")
+        style_name = metadata.get("style", "executive")
+        template_name = args.template or metadata.get("template")
         template_mgr = TemplateManager()
         
         # Map format to converter and template extension
@@ -53,7 +64,7 @@ def main():
         }
         
         tmpl_ext, ConverterClass = ext_map[target_format]
-        template_path = template_mgr.get_template(template_name, tmpl_ext)
+        template_path = template_mgr.get_template(template_name, style_name, tmpl_ext)
         
         # We might want to pass None if default template file doesn't exist
         if not os.path.exists(template_path):

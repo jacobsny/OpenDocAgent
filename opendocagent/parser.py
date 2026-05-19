@@ -1,17 +1,23 @@
 import markdown_it
 import yaml
 import re
+import jinja2
 
 class MarkdownParser:
     def __init__(self):
         self.md = markdown_it.MarkdownIt()
         self.frontmatter_regex = re.compile(r"^-{3,}\s*\n(.*?)\n-{3,}\s*\n", re.DOTALL)
         
-    def parse(self, content: str):
+    def parse(self, content: str, context: dict = None):
         """
         Parses Markdown content and returns an AST (Abstract Syntax Tree)
         along with any parsed frontmatter metadata.
+        If a context dictionary is provided, the content is rendered via Jinja2 first.
         """
+        if context:
+            template = jinja2.Template(content)
+            content = template.render(**context)
+            
         metadata = {}
         
         # Extract YAML frontmatter if it exists
