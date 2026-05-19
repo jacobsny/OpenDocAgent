@@ -31,20 +31,38 @@ class MarkdownParser:
             # Remove frontmatter from content before passing to markdown parser
             content = content[match.end():]
             
-        # Feature 5: Auto-Table of Contents
-        if metadata.get("toc"):
-            content = "# Table of Contents\n\n[[TOC]]\n\n---\n" + content
-            
-        # Feature 4: Multi-Column Layout Directives
-        # Replace ::: col with a custom HTML block or token
-        content = re.sub(r":::\s*col", "<!-- col -->", content)
-            
-        # Feature 1: Mermaid.js integration placeholder
-        # In a full implementation, we'd find ```mermaid blocks, run mmdc via subprocess, 
-        # and replace them with ![diagram](path.png)
-        content = re.sub(r"```mermaid(.*?)```", r"![Mermaid Diagram](mermaid_placeholder.png)", content, flags=re.DOTALL)
-            
         tokens = self.md.parse(content)
+        
+        # AST Manipulation (Phase 4 Refactor)
+        from markdown_it.token import Token
+        new_tokens = []
+        
+        # Feature 5: Auto-Table of Contents (inject at top)
+        if metadata.get("toc"):
+            h1_open = Token("heading_open", "h1", 1)
+            h1_text = Token("inline", "", 0)
+            h1_text.content = "Table of Contents"
+            h1_close = Token("heading_close", "h1", -1)
+            toc_token = Token("inline", "", 0)
+            toc_token.content = "[[TOC]]"
+            hr_token = Token("hr", "hr", 0)
+            new_tokens.extend([h1_open, h1_text, h1_close, toc_token, hr_token])
+            
+        for token in tokens:
+            # Feature 4: Multi-Column Layout Directives
+            if token.type == "inline" and "::: col" in token.content:
+                token.content = token.content.replace("::: col", "<!-- col -->")
+                
+            # Feature 1: Mermaid.js integration
+            if token.type == "fence" and token.info == "mermaid":
+                img_token = Token("inline", "", 0)
+                img_token.content = "![Mermaid Diagram](mermaid_placeholder.png)"
+                new_tokens.append(img_token)
+                continue
+                
+            new_tokens.append(token)
+            
+        tokens = new_tokens
         
         return {
             "metadata": metadata,
