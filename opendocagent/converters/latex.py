@@ -14,6 +14,14 @@ class LatexConverter(BaseConverter):
         _, ext = os.path.splitext(output_path)
         out_fmt = 'pdf' if ext.lower() == '.pdf' else 'latex'
         
+        target_fmt = parsed.get("metadata", {}).get("format", "").lower()
+        if target_fmt == "beamer":
+            extra_args.extend([
+                "-t", "beamer",
+                "-V", "aspectratio=169",
+                "-V", "theme=Madrid"
+            ])
+            
         pypandoc.convert_text(
             content,
             out_fmt,
