@@ -35,16 +35,54 @@ Depending on the user's choice of **Archetype**, you must fundamentally alter yo
 - **Detail:** Comprehensive. Use inline tables, code blocks, and Mermaid.js diagrams to explain systems.
 - **Tone:** Objective, scientific, reproducible.
 
+## Document Lifecycle — MANDATORY RULES
+
+> **NEVER write Markdown or rendered output files directly to the project root.**
+> ALL documents MUST go through the `wip/` → `finalized/` lifecycle using the workflow manager.
+
+### Directory Conventions
+| Directory | Purpose |
+|---|---|
+| `wip/<slug>/` | Active draft — Markdown + in-progress renders |
+| `finalized/<slug>/` | Completed and approved — promoted from `wip/` |
+
+Both directories are `.gitignore`d and will never be committed.
+
+---
+
 ## Execution Workflow
 
-1. **Get Syntax Rules:** Once the user answers the Q&A, run the following Python command to get the exact Markdown syntax rules you must follow:
+1. **Interactive Q&A** — Run the questionnaire first (see above). Do not skip.
+
+2. **Create a WIP workspace** — Use a short, descriptive slug (e.g. `q3-report`, `pitch-deck`):
+   ```bash
+   python skills/opendocagent_document_generation/scripts/workflow.py new <slug>
+   ```
+   This creates `wip/<slug>/<slug>.md` pre-populated with a frontmatter stub.
+
+3. **Get Syntax Rules** — Fetch the writing guidelines for the chosen archetype:
    ```bash
    python -c "import opendocagent.prompts as p; print(p.get_agent_prompt('<STYLE>'))"
    ```
    *(Replace `<STYLE>` with `executive` or `technical`)*
-2. **Write Payload:** Write the Markdown to a file (e.g., `payload.md`), following the syntax rules exactly. Include the required YAML frontmatter.
-3. **Compile:** Run the CLI command:
+
+4. **Write Payload** — Edit `wip/<slug>/<slug>.md` with the full document content, following the syntax rules exactly. Update the YAML frontmatter (`format`, `style`, `title`, `author`, etc.) to match the user's answers.
+
+5. **Build** — Compile the document. The rendered output is automatically saved into `wip/<slug>/`:
    ```bash
-   opendoc build payload.md --format <FORMAT>
+   python skills/opendocagent_document_generation/scripts/workflow.py build <slug> --format <FORMAT>
    ```
-4. **Deliver:** Present the final compiled file to the user.
+   *(Valid formats: `pptx`, `docx`, `pdf`, `beamer`)*
+
+6. **Review with User** — Present the rendered output to the user for review. If revisions are needed, edit the Markdown and repeat step 5.
+
+7. **Finalize** — Once the user explicitly approves the document, promote it to `finalized/`:
+   ```bash
+   python skills/opendocagent_document_generation/scripts/workflow.py finalize <slug>
+   ```
+   The workspace is moved from `wip/<slug>/` → `finalized/<slug>/`. The WIP folder is automatically removed.
+
+8. **Check Status** — At any time, view all active and finalized workspaces:
+   ```bash
+   python skills/opendocagent_document_generation/scripts/workflow.py status
+   ```
