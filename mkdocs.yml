@@ -8,3 +8,4 @@ theme:
 nav:
   - Home: index.md
   - Markdown Syntax Guide: syntax.md
+  - Architecture & Codepath: architecture.md
