@@ -1,5 +1,7 @@
 import os
 import tempfile
+import pytest
+import pypandoc
 from opendocagent.converters import DocxConverter, PptxConverter, LatexConverter
 
 def test_docx_converter():
@@ -31,6 +33,11 @@ def test_pptx_converter():
             os.remove(out_path)
             
 def test_latex_converter():
+    try:
+        pypandoc.get_pandoc_version()
+    except OSError:
+        pytest.skip("Pandoc not found, skipping LaTeX integration test.")
+
     converter = LatexConverter()
     
     with tempfile.NamedTemporaryFile(suffix=".tex", delete=False) as tmp:
