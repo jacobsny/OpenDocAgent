@@ -1,8 +1,11 @@
 import os
 
 class TemplateManager:
-    def __init__(self, template_dir="templates"):
-        self.template_dir = template_dir
+    def __init__(self, template_dir=None):
+        if template_dir is None:
+            self.template_dir = os.path.join(os.path.dirname(__file__), "templates")
+        else:
+            self.template_dir = template_dir
         
     def get_template(self, name: str, style: str, format_type: str) -> str:
         """

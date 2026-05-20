@@ -41,7 +41,7 @@ htmlcov/
 *.latex
 
 # Allow tracking core LaTeX style sheets/templates
-!templates/**/*.tex
+!opendocagent/templates/**/*.tex
 
 # Document workspaces — never commit in-progress or finalized docs
 wip/

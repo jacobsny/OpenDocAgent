@@ -4,17 +4,7 @@ from pathlib import Path
 from .base import BaseConverter
 
 
-def _find_project_root() -> Path:
-    """Walk up from this file until pyproject.toml is found."""
-    candidate = Path(__file__).resolve().parent
-    for _ in range(10):
-        if (candidate / "pyproject.toml").exists():
-            return candidate
-        candidate = candidate.parent
-    raise RuntimeError("Could not locate project root (no pyproject.toml found).")
-
-
-TEMPLATES_DIR = _find_project_root() / "templates" / "latex"
+TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates" / "latex"
 
 
 class LatexConverter(BaseConverter):
