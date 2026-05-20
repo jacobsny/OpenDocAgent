@@ -21,10 +21,19 @@ class DocumentPipeline:
         return self.build(content, input_file, output_format, context, template_override)
         
     def build(self, markdown_content: str, base_filename: str, output_format: str = "auto", context: dict = None, template_override: str = None):
+        from opendocagent.exceptions import ValidationLintError
+        import sys
+
         parsed = self.parser.parse(markdown_content, context=context)
         metadata = parsed["metadata"]
-        
-        self.validator.validate(metadata, parsed["tokens"])
+        content  = parsed.get("content", "")
+
+        lint_result = self.validator.lint(metadata, parsed["tokens"], content)
+        lint_result.print_all(file=sys.stderr)
+
+        if lint_result.has_errors:
+            error_msgs = "; ".join(str(e) for e in lint_result.errors)
+            raise ValidationLintError(f"Lint errors blocked the build: {error_msgs}")
         
         target_format = metadata.get("format") if output_format == "auto" else output_format
         if not target_format:
