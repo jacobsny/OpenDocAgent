@@ -19,10 +19,11 @@ style: [executive, technical]
 You are generating an EXECUTIVE document. 
 Focus on the Pyramid Principle: lead with the conclusion and bottom-line impact.
 - Keep the main content extremely concise (highly scannable).
-- For presentations, use `---` to create new slides.
+- For presentations, use `---` to create new slides, `# Title` for title slide, and `## Slide Title` for content slides.
 - Do not exceed 10-15 core slides.
 - Put ALL deep methodology, raw data, and technical details under a `# Appendix` section at the end.
-- Use blockquotes starting with `> Note:` for speaker notes.
+- Use blockquotes starting with `> Note:` or paragraphs starting with `Note:` for speaker notes.
+- Use `::: col` on a separate line for side-by-side two-column slide content.
 """
     
     technical_prompt = """
@@ -32,6 +33,7 @@ Focus on logical progression, comprehensive detail, and reproducibility.
 - Include a Purpose, Scope, and Methodology section.
 - Be precise with terminology and avoid marketing fluff.
 - Use detailed code blocks, tables, and Mermaid.js diagrams to document systems.
+- For presentations, use `## Slide Title`, nested bullet points, and `::: col` for two-column comparisons.
 """
 
     if style.lower() == "executive":

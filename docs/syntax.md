@@ -28,9 +28,11 @@ numbersections: true     # Automatically number headers
 
 When target format is `pptx` or `beamer`, standard markdown elements are mapped to slides as follows:
 
+*   **Title Slide**: Use a Level-1 header (`#`) to create a Title Slide; any paragraph immediately following becomes the subtitle.
 *   **Slide Separator**: Use `---` on a blank line to start a new slide.
-*   **Slide Title**: Use a Level-2 header (`##`) for the slide title.
-*   **Content**: Lists, paragraphs, tables, or images.
+*   **Slide Title**: Use a Level-2 header (`##`) for each content slide title.
+*   **Content**: Nested bullet lists, paragraphs, columns, and diagrams.
+*   **Speaker Notes**: Use blockquotes (`> Note: ...`) or paragraphs (`Note: ...`) to populate the slide's speaker notes.
 
 ### Example Presentation:
 ```markdown
@@ -40,14 +42,32 @@ format: "pptx"
 style: "executive"
 ---
 
-## Slide One Title
-- Bullet point A
-- Bullet point B
+# Q3 Business Review
+Accelerating Customer Growth in Enterprise
 
 ---
 
-## Slide Two Title
-This is paragraph text on slide two.
+## Market Landscape
+- Strong expansion in AI developer tooling
+  - High demand for agentic workflows
+  - Integration with FastMCP protocols
+- Competitor shifts toward proprietary models
+
+> Note: Emphasize that our open agentic pipeline gives enterprise clients complete data sovereignty.
+
+---
+
+## Strategic Initiatives
+
+Left Column Focus:
+- Core Platform
+- Agent API
+
+::: col
+
+Right Column Focus:
+- FastMCP Integration
+- Enterprise Compliance
 ```
 
 ---

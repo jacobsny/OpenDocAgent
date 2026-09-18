@@ -9,6 +9,13 @@ from opendocagent.validator import LintResult, TemplateValidator
 from opendocagent.types import ParsedDocument
 
 
+_DEFAULT_CONVERTERS: dict[str, tuple[str, str, str]] = {
+    "docx": ("dotx", "opendocagent.converters.docx_conv", "DocxConverter"),
+    "pptx": ("potx", "opendocagent.converters.pptx_conv", "PptxConverter"),
+    "latex": ("tex", "opendocagent.converters.latex", "LatexConverter"),
+}
+
+
 class DocumentPipeline:
     def __init__(self) -> None:
         self.parser = MarkdownParser()
@@ -18,6 +25,17 @@ class DocumentPipeline:
         
     def register_converter(self, format_name: str, tmpl_ext: str, converter_cls: type) -> None:
         self._converters[format_name.lower()] = (tmpl_ext, converter_cls)
+
+    def _resolve_converter(self, target_format: str) -> tuple[str, type]:
+        if target_format in self._converters:
+            return self._converters[target_format]
+        if target_format in _DEFAULT_CONVERTERS:
+            import importlib
+            tmpl_ext, mod_path, cls_name = _DEFAULT_CONVERTERS[target_format]
+            mod = importlib.import_module(mod_path)
+            cls = getattr(mod, cls_name)
+            return tmpl_ext, cls
+        raise FormatNotSupportedError(f"Unsupported format '{target_format}'")
 
     def lint(self, markdown_content: str, context: dict[str, Any] | None = None) -> LintResult:
         """Run structural validation and linting on markdown content."""
@@ -63,16 +81,20 @@ class DocumentPipeline:
         if target_format in ["pdf", "beamer"]:
             target_format = "latex"
             
-        if target_format not in self._converters:
-            raise FormatNotSupportedError(f"Unsupported format '{target_format}'")
-            
-        tmpl_ext, ConverterClass = self._converters[target_format]
+        tmpl_ext, ConverterClass = self._resolve_converter(target_format)
         
         style_name = metadata.get("style", "executive")
         template_name = template_override or metadata.get("template")
         resolved_path: str = self.template_mgr.get_template(template_name, style_name, tmpl_ext)
         
+        if template_override and not os.path.exists(resolved_path):
+            from opendocagent.exceptions import TemplateNotFoundError
+            raise TemplateNotFoundError(f"Requested template '{template_override}' not found at {resolved_path}")
+
         template_path: str | None = resolved_path if os.path.exists(resolved_path) else None
+        if template_path and not self.template_mgr.is_valid_template(template_path):
+            from opendocagent.exceptions import TemplateNotFoundError
+            raise TemplateNotFoundError(f"Template at '{template_path}' is corrupted or not a valid package.")
             
         converter = ConverterClass(template_path=template_path)
         out_ext = "pdf" if target_format == "latex" else target_format

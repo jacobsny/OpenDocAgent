@@ -1,7 +1,12 @@
-import pypandoc
+try:
+    import pypandoc
+except ImportError:
+    pypandoc = None  # type: ignore[assignment]
+
 import os
 from pathlib import Path
 from typing import Any
+from opendocagent.exceptions import OpenDocAgentError
 from opendocagent.types import ParsedDocument
 from .base import BaseConverter
 
@@ -51,13 +56,26 @@ class LatexConverter(BaseConverter):
         for key, val in metadata.get("pandoc_vars", {}).items():
             extra_args.extend(["-V", f"{key}:{val}"])
 
-        pypandoc.convert_text(
-            content,
-            out_fmt,
-            format="md",
-            outputfile=output_path,
-            extra_args=extra_args,
-        )
+        if pypandoc is None:
+            raise OpenDocAgentError(
+                "LaTeX/PDF generation requires the 'pypandoc' package. "
+                "Install it with: pip install pypandoc and ensure Pandoc is installed on your system."
+            )
+
+        try:
+            pypandoc.convert_text(
+                content,
+                out_fmt,
+                format="md",
+                outputfile=output_path,
+                extra_args=extra_args,
+            )
+        except OSError as e:
+            raise OpenDocAgentError(
+                f"Pandoc execution failed: {e}. Please ensure Pandoc is installed and on your PATH."
+            ) from e
+        except Exception as e:
+            raise OpenDocAgentError(f"Failed to generate LaTeX/PDF document: {e}") from e
 
     # ------------------------------------------------------------------
     # Private helpers

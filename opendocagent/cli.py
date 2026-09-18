@@ -4,16 +4,11 @@ import json
 import os
 
 from opendocagent.pipeline import DocumentPipeline
-from opendocagent.converters import DocxConverter, PptxConverter, LatexConverter
 from opendocagent.exceptions import OpenDocAgentError
 
 
 def build_pipeline() -> DocumentPipeline:
-    pipeline = DocumentPipeline()
-    pipeline.register_converter("docx", "dotx", DocxConverter)
-    pipeline.register_converter("pptx", "potx", PptxConverter)
-    pipeline.register_converter("latex", "tex", LatexConverter)
-    return pipeline
+    return DocumentPipeline()
 
 
 def cmd_build(args) -> int:

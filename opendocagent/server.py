@@ -30,12 +30,7 @@ mcp = FastMCP("OpenDocAgent")
 
 
 def _get_pipeline() -> DocumentPipeline:
-    from opendocagent.converters import DocxConverter, PptxConverter, LatexConverter
-    pipeline = DocumentPipeline()
-    pipeline.register_converter("docx", "dotx", DocxConverter)
-    pipeline.register_converter("pptx", "potx", PptxConverter)
-    pipeline.register_converter("latex", "tex", LatexConverter)
-    return pipeline
+    return DocumentPipeline()
 
 
 # ---------------------------------------------------------------------------
@@ -48,7 +43,21 @@ def lint_document(content: str, context_json: str | None = None) -> LintResultDi
     Validates and lints OpenDocAgent Markdown content against style guide and schema rules.
     Returns structured diagnostics including errors, warnings, rule codes, and valid status.
     """
-    context = json.loads(context_json) if context_json else None
+    try:
+        context = json.loads(context_json) if context_json else None
+    except Exception as exc:
+        return {
+            "valid": False,
+            "total_issues": 1,
+            "errors": 1,
+            "warnings": 0,
+            "infos": 0,
+            "issues": [{
+                "severity": "ERROR",
+                "code": "E_JSON",
+                "message": f"Malformed context_json: {exc}",
+            }],
+        }
     pipeline = _get_pipeline()
     result = pipeline.lint(content, context=context)
     return result.to_dict()
@@ -66,9 +75,9 @@ def compile_document(
     Compiles specialized OpenDocAgent Markdown into PDF, DOCX, PPTX, or LaTeX.
     Writes the compiled artifact to output_path.
     """
-    context = json.loads(context_json) if context_json else None
-    pipeline = _get_pipeline()
     try:
+        context = json.loads(context_json) if context_json else None
+        pipeline = _get_pipeline()
         generated_file = pipeline.build(
             markdown_content=content,
             base_filename=output_path,
@@ -140,5 +149,5 @@ def draft_document(style: str = "executive", format: str = "pdf") -> str:
     return (
         f"{style_guidance}\n\n"
         f"Target Format: {format}\n"
-        f"Make sure your response begins immediately with YAML frontmatter specifying ormat: {format} and style: {style}."
+        f"Make sure your response begins immediately with YAML frontmatter specifying format: {format} and style: {style}."
     )
