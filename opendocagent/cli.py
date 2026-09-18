@@ -104,6 +104,30 @@ def cmd_lint(args) -> int:
     return 1 if result.has_errors else 0
 
 
+def cmd_serve_mcp(args) -> int:
+    """
+    Handle the 'serve-mcp' sub-command.
+    Lazy-imports opendocagent.server to avoid hard dependency on mcp
+    for basic CLI build/lint operations.
+    """
+    try:
+        from opendocagent.server import mcp
+    except ImportError as e:
+        print(
+            "Error: The 'mcp' package is required to run the FastMCP server.\n"
+            "Install it via: pip install \"opendocagent[mcp]\" or pip install mcp",
+            file=sys.stderr,
+        )
+        return 1
+
+    transport = args.transport.lower()
+    if transport == "sse":
+        mcp.run(transport="sse", host=args.host, port=args.port)
+    else:
+        mcp.run(transport="stdio")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="OpenDocAgent CLI",
@@ -130,12 +154,34 @@ def main():
     lint_p = sub.add_parser("lint", help="Lint a Markdown file without building it.")
     lint_p.add_argument("input_file", help="Path to the Markdown file to lint.")
 
+    # ------------------------------------------------------------------ serve-mcp
+    mcp_p = sub.add_parser("serve-mcp", help="Run the FastMCP server for AI agents.")
+    mcp_p.add_argument(
+        "--transport",
+        choices=["stdio", "sse"],
+        default="stdio",
+        help="Transport protocol to use (default: stdio).",
+    )
+    mcp_p.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Host to bind for SSE transport (default: 127.0.0.1).",
+    )
+    mcp_p.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to bind for SSE transport (default: 8000).",
+    )
+
     args = parser.parse_args()
 
     if args.command == "build":
         sys.exit(cmd_build(args))
     elif args.command == "lint":
         sys.exit(cmd_lint(args))
+    elif args.command == "serve-mcp":
+        sys.exit(cmd_serve_mcp(args))
     else:
         parser.print_help()
         sys.exit(1)

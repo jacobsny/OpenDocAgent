@@ -1,6 +1,8 @@
 import pypandoc
 import os
 from pathlib import Path
+from typing import Any
+from opendocagent.types import ParsedDocument
 from .base import BaseConverter
 
 
@@ -19,7 +21,8 @@ class LatexConverter(BaseConverter):
     ``pandoc_vars`` dict in frontmatter allows arbitrary ``-V key:value`` flags.
     """
 
-    def convert(self, parsed: dict, output_path: str) -> None:
+    def convert(self, parsed: dict[str, Any] | ParsedDocument, output_path: str | Path) -> None:
+        output_path = str(output_path)
         content = parsed.get("content", "")
         metadata = parsed.get("metadata", {})
 

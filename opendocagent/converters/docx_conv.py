@@ -1,9 +1,14 @@
+import io
+from pathlib import Path
+from typing import Any
 import docx
 from docx.shared import Pt
+from opendocagent.types import ParsedDocument
 from .base import BaseConverter
 
+
 class DocxConverter(BaseConverter):
-    def convert(self, parsed: dict, output_path: str):
+    def _build_doc(self, parsed: dict[str, Any] | ParsedDocument) -> Any:
         doc = docx.Document(self.template_path) if self.template_path else docx.Document()
         
         tokens = parsed.get("tokens", [])
@@ -35,7 +40,17 @@ class DocxConverter(BaseConverter):
                 
             i += 1
             
-        doc.save(output_path)
+        return doc
+
+    def convert(self, parsed: dict[str, Any] | ParsedDocument, output_path: str | Path) -> None:
+        doc = self._build_doc(parsed)
+        doc.save(str(output_path))
+
+    def convert_bytes(self, parsed: dict[str, Any] | ParsedDocument) -> bytes:
+        doc = self._build_doc(parsed)
+        buf = io.BytesIO()
+        doc.save(buf)
+        return buf.getvalue()
         
     def _process_inline(self, paragraph, children):
         if not children:

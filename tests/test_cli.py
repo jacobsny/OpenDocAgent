@@ -86,3 +86,17 @@ def test_cli_lint_warnings_only_exit_0(tmp_path):
         with pytest.raises(SystemExit) as exc:
             main()
         assert exc.value.code == 0
+
+
+# ---------------------------------------------------------------------------
+# serve-mcp
+# ---------------------------------------------------------------------------
+
+def test_cli_serve_mcp_invocation():
+    with patch("opendocagent.server.mcp.run") as mock_run:
+        with patch.object(sys, "argv", ["opendoc", "serve-mcp", "--transport", "stdio"]):
+            with pytest.raises(SystemExit) as exc:
+                main()
+            assert exc.value.code == 0
+            mock_run.assert_called_once_with(transport="stdio")
+

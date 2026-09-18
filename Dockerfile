@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # Install system dependencies for pandoc, texlive, and nodejs (for mermaid)
 RUN apt-get update && apt-get install -y \

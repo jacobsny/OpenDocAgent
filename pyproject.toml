@@ -11,6 +11,7 @@ license = { text = "MIT" }
 authors = [
     { name = "OpenDocAgent Contributors" }
 ]
+requires-python = ">=3.12"
 dependencies = [
     "markdown-it-py>=3.0.0",
     "pypandoc>=1.13",
@@ -22,10 +23,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+mcp = [
+    "mcp>=1.2.0"
+]
 dev = [
     "pytest>=7.0.0",
-    "pytest-cov>=4.0.0"
+    "pytest-cov>=4.0.0",
+    "mcp>=1.2.0",
+    "mypy>=1.10.0"
 ]
 
 [project.scripts]
 opendoc = "opendocagent.cli:main"
+

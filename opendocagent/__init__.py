@@ -3,3 +3,4 @@ OpenDocAgent: Agentic workflow tool for converting Markdown to LaTeX, PDF, PPTX,
 """
 
 __version__ = "0.1.0"
+

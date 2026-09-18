@@ -7,10 +7,11 @@ class TemplateManager:
         else:
             self.template_dir = template_dir
         
-    def get_template(self, name: str, style: str, format_type: str) -> str:
+    def get_template(self, name: str | None, style: str | None, format_type: str) -> str:
         """
         Returns the path to the requested template file.
         format_type should be one of 'potx', 'dotx', 'tex'
         """
         template_name = name if name else (style if style else "default")
         return os.path.join(self.template_dir, f"{template_name}.{format_type}")
+

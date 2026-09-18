@@ -14,6 +14,9 @@ from enum import Enum
 from typing import List
 
 
+from opendocagent.types import LintIssueDict, LintResultDict
+
+
 # ---------------------------------------------------------------------------
 # Severity model
 # ---------------------------------------------------------------------------
@@ -34,11 +37,18 @@ class LintIssue:
     def __str__(self) -> str:
         return f"[{self.severity.value}] {self.code}: {self.message}"
 
+    def to_dict(self) -> LintIssueDict:
+        return {
+            "severity": self.severity.value,
+            "code": self.code,
+            "message": self.message,
+        }
+
 
 @dataclass
 class LintResult:
     """Aggregate result of a lint pass over a Markdown document."""
-    issues: List[LintIssue] = field(default_factory=list)
+    issues: list[LintIssue] = field(default_factory=list)
 
     # ------------------------------------------------------------------
     # Helpers
@@ -52,16 +62,27 @@ class LintResult:
         return any(i.severity == Severity.ERROR for i in self.issues)
 
     @property
-    def errors(self) -> List[LintIssue]:
+    def errors(self) -> list[LintIssue]:
         return [i for i in self.issues if i.severity == Severity.ERROR]
 
     @property
-    def warnings(self) -> List[LintIssue]:
+    def warnings(self) -> list[LintIssue]:
         return [i for i in self.issues if i.severity == Severity.WARNING]
 
     @property
-    def infos(self) -> List[LintIssue]:
+    def infos(self) -> list[LintIssue]:
         return [i for i in self.issues if i.severity == Severity.INFO]
+
+    def to_dict(self) -> LintResultDict:
+        """Serialize lint results into a structured dictionary for LLMs and FastMCP."""
+        return {
+            "valid": not self.has_errors,
+            "total_issues": len(self.issues),
+            "errors": len(self.errors),
+            "warnings": len(self.warnings),
+            "infos": len(self.infos),
+            "issues": [i.to_dict() for i in self.issues],
+        }
 
     def print_all(self, file=None) -> None:
         """Pretty-print all issues to *file* (default stderr)."""

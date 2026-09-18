@@ -1,8 +1,13 @@
+import io
+from pathlib import Path
+from typing import Any
 from pptx import Presentation
+from opendocagent.types import ParsedDocument
 from .base import BaseConverter
 
+
 class PptxConverter(BaseConverter):
-    def convert(self, parsed: dict, output_path: str):
+    def _build_presentation(self, parsed: dict[str, Any] | ParsedDocument) -> Any:
         prs = Presentation(self.template_path) if self.template_path else Presentation()
         
         tokens = parsed.get("tokens", [])
@@ -86,5 +91,16 @@ class PptxConverter(BaseConverter):
                     
             i += 1
             
-        prs.save(output_path)
+        return prs
+
+    def convert(self, parsed: dict[str, Any] | ParsedDocument, output_path: str | Path) -> None:
+        prs = self._build_presentation(parsed)
+        prs.save(str(output_path))
+
+    def convert_bytes(self, parsed: dict[str, Any] | ParsedDocument) -> bytes:
+        prs = self._build_presentation(parsed)
+        buf = io.BytesIO()
+        prs.save(buf)
+        return buf.getvalue()
+
 
